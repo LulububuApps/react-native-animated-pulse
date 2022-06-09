@@ -6,10 +6,12 @@ interface Props {
     diameter?: number;
     duration?: number;
     initialDiameter?: number;
+    initialOpacity?: number;
     numPulses?: number;
     pulseStyle?: ViewStyle;
     speed?: number;
     style?: ViewStyle;
+    targetOpacity?: number;
 }
 
 interface Pulse {
@@ -25,6 +27,7 @@ const initialProps: Props = {
     diameter: 400,
     duration: 2000,
     initialDiameter: 0,
+    initialOpacity: 0.8,
     numPulses: 3,
     pulseStyle: {},
     speed: 300,
@@ -35,10 +38,21 @@ const initialProps: Props = {
         justifyContent: 'center',
         alignItems: 'center',
     },
+    targetOpacity: 0.2,
 };
 
 export const PulseAnimation = (props = initialProps) => {
-    const {color, diameter, pulseStyle, style, duration, speed, numPulses} = props;
+    const {
+        color,
+        diameter,
+        pulseStyle,
+        style,
+        duration,
+        speed,
+        numPulses,
+        initialOpacity,
+        initialDiameter
+    } = {...initialProps, ...props};
 
     const pulses = useMemo<Pulse[]>(
         () =>
@@ -46,9 +60,9 @@ export const PulseAnimation = (props = initialProps) => {
                 return {
                     centerOffset: 0,
                     pulseKey: index,
-                    opacity: new Animated.Value(0.8),
-                    diameter: new Animated.Value(0),
-                    borderRadius: new Animated.Value(0),
+                    opacity: new Animated.Value(initialOpacity),
+                    diameter: new Animated.Value(initialDiameter),
+                    borderRadius: new Animated.Value(initialDiameter),
                 };
             }),
         [numPulses],
@@ -65,7 +79,7 @@ export const PulseAnimation = (props = initialProps) => {
                             useNativeDriver: false,
                         }),
                         Animated.timing(pulse.opacity, {
-                            toValue: 0.2,
+                            toValue: props.targetOpacity,
                             duration: speed,
                             useNativeDriver: false,
                         }),
